@@ -1,0 +1,40 @@
+[package]
+authors      = ["Tony <repositony@outlook.com>"]
+description  = "Command line tool to retrieve IAEA decay data"
+edition      = "2021"
+keywords     = ["decay", "iaea", "mcnp", "radiation"]
+license      = "GPL-3.0 license"
+name         = "ddata"
+readme       = "readme.md"
+repository   = "https://github.com/repositony/decaydata"
+rust-version = "1.79"
+version      = "1.0.0"
+
+[dependencies]
+# core library, not currently for public use
+ntools = { git = "ssh://git@github.com/repositony/ntools.git", branch = "main", features = [
+    "iaea",
+] }
+
+# external
+anyhow             = "1.0.95"
+clap               = { version = "4.5.26", features = ["derive", "wrap_help"] }
+colored            = "3.0.0"
+log                = "0.4.25"
+serde              = "1.0.217"
+serde_json         = "1.0.136"
+stderrlog          = "0.6.0"
+strip-ansi-escapes = "0.2.1"
+textwrap           = "0.16.1"
+
+[lints.rust]
+unsafe_code = "forbid"
+
+[[bin]]
+doc  = false
+name = "ddata"
+
+# The profile that 'dist' will build with
+[profile.dist]
+inherits = "release"
+lto      = "thin"
