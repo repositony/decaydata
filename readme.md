@@ -1,5 +1,7 @@
 # IAEA decay data CLI (`ddata`)
 
+[![GitHub release](https://img.shields.io/github/v/release/repositony/decaydata?include_prereleases)](https://github.com/repositony/decaydata/releases/latest)
+
 Command line tool to retrieve decay data from the IAEA chart of nuclides
 
 ```text
@@ -33,18 +35,14 @@ Note: --help shows more information and examples
 Help is printed with the `-h` flag, and `--help` will show default values,
 examples, and any important behaviour.
 
-## Install
-
-Download and unpack the latest binary executable release [here](https://github.com/repositony/decaydata/releases/latest) for running in a terminal/powershell.
-
 ## Overview
 
 This tool allows for rapid collection of [IAEA chart of nuclides](https://www-nds.iaea.org/relnsd/vcharthtml/VChartHTML.html)
 from the command line.
 
-Raw CSV data fetched from the IAEA API and parsed into something usable. This
-may be done through direct calls to the IAEA API, or through the pre-fetched
-data (default, recommended).
+Raw CSV data are fetched from the IAEA API and parsed into something usable.
+This may be done through direct calls to the IAEA API, or through the
+pre-fetched data (default, recommended).
 
 `ddata` supports all IAEA decay data types:
 
@@ -60,12 +58,52 @@ data (default, recommended).
 Note that selecting 'gamma' will provide all photon data, including X-rays. This
 is consistent with the data retrieved via the horrible IAEA API.
 
-## Examples
+## Install
 
-### Basic use
+Download and unpack the latest binary executable release [here](https://github.com/repositony/decaydata/releases/latest) for running in a terminal/powershell.
+
+### Linux/MacOS
+
+Unpack the relevant executable from the [latest release](https://github.com/repositony/decaydata/releases/latest).
+
+```bash
+# Linux
+tar -xjf ddata-x86_64-unknown-linux-gnu.tar.xz  # Generic linux
+tar -xjf ddata-aarch64-unknown-linux-gnu.tar.xz # ARM64 Linux
+
+# MacOS
+tar -xjf ddata-x86_64-apple-darwin.tar.xz       # Intel macOS
+tar -xjf ddata-aarch64-apple-darwin.tar.xz      # Apple Silicon macOS
+```
+
+And either run from there or add the executable to your `$PATH`.
+
+```bash
+./ddata -h
+```
+
+### Windows
+
+Extract `ddata-x86_64-pc-windows-msvc.zip` from the [latest release](https://github.com/repositony/decaydata/releases/latest).
+
+Navigate to this folder and run from powershell.
+
+```bash
+.\ddata.exe -h
+```
+
+This may be set as an alias for convenience.
+
+```powershell
+Set-Alias -Name ddata -Value C:\Path\To\Folder\ddata.exe
+```
+
+## Examples
 
 A table of decay data is always printed for reference unless the `--quiet` flag
 is used.
+
+### Specifying nuclides
 
 Nuclides may be given in the following formats:
 
@@ -78,17 +116,18 @@ Nuclides may be given in the following formats:
 For example:
 
 ```bash
-# Print IAEA decay data for ground state Cobalt-60 and Cesium-137 
+# Print IAEA decay data for ground state Cobalt-60 and Cesium-137
 ddata co60 cs137
 ```
 
-To be explicit:
+Further details:
 
-- Nuclides are `element` `number` `state`, where the `number` and `state` are optional
-- Elements are expanded to find all nuclides with relevant decay data
+- Nuclides are in the form `element` `number` `state`
+  - `number` and `state` are optional
 - Nuclides are case-insensitive
 - Dividers such as `-` in Co-60 are ignored
 - Nuclides unknown or without relevant decay data are ignored
+- Elements are expanded to find all nuclides with relevant decay data
 - FISPACT-II style metastable markers assumed to map m->m1, n->m2, etc..
 
 ### Choosing output formats
@@ -124,8 +163,10 @@ sequentially from the value passed to `--id`. Defaults to `100`.
 ddata co60 cs137 --mcnp --id 20
 ```
 
-[!WARNING]
-Note that the CSV data are the unparsed horror show direct from the IAEA API.
+**! WARNING !**
+
+Note that raw CSV data (`--csv`) are the unparsed horror show fetched directly
+from the IAEA API.
 
 ### Choosing output file prefix/name
 
@@ -175,20 +216,29 @@ To order by relative intensity (descending), use the `--sort`/`-s` argument.
 For example:
 
 ```bash
-# Choose output data sorting:
-ddata co60 cs137 --sort energy        [defualt]
-ddata co60 cs137 --sort intensity
+# Sort decay data records by ascending energy
+ddata co60 --sort energy        [defualt]
+
+# Sort decay data records by descending intensity
+ddata co60 --sort intensity
 ```
 
-This applies to all output files.
+This sorting also applies to all output files.
 
 ### IAEA data options
 
-It is **strongly recommended** to use the pre-compiled decay data (defualt).
+Decay data are either:
 
-If the absolute latest data are required and performance is not a concern, the
-data may be fetched directly from the IAEA chart of nuclides API with the
-`-f`/`--fetch` flag.
+- Loaded from pre-fetched data (recommended)
+- Fetched directly from the API
+  - Internet connection required
+  - Requests for large numbers of nuclides are parallelised.
+
+It is **strongly recommended** to use the pre-processed decay data (defualt).
+
+However, if the absolute latest data are required and performance is not a
+concern, data may be fetched directly from the IAEA chart of nuclides API with
+the `-f`/`--fetch` flag.
 
 For example:
 
@@ -196,5 +246,3 @@ For example:
 # Force decay data to be fetched direct from the IAEA chart of nuclides API
 ddata co60 --fetch ...
 ```
-
-This obviously requires an internet connection.
